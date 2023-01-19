@@ -6,15 +6,16 @@ using System.Linq;
 using System.Net;
 using System.IO;
 
-public class WarThunderPatchNotesBot
+public class WarThunderBot
 {
     private DiscordSocketClient _client;
+    private const string _wikiUrl = "https://wiki.warthunder.com/";
 
-    public WarThunderPatchNotesBot()
+    public WarThunderBot()
     {
         _client = new DiscordSocketClient();
-
         _client.Ready += Ready;
+        _client.MessageReceived += MessageReceived;
     }
 
     public async Task Ready()
@@ -25,6 +26,29 @@ public class WarThunderPatchNotesBot
             var channel = _client.GetGuild(YOUR_SERVER_ID).GetTextChannel(YOUR_CHANNEL_ID);
             await channel.SendMessageAsync(patchNotes);
         }, null, TimeSpan.Zero, TimeSpan.FromMinutes(60));
+    }
+
+    public async Task MessageReceived(SocketMessage message)
+    {
+        if (message.Content.StartsWith("!wt"))
+        {
+            var request = message.Content.Substring(3);
+            var response = await GetWikiInfo(request);
+            await message.Channel.SendMessageAsync(response);
+        }
+    }
+
+    public async Task<string> GetWikiInfo(string request)
+    {
+        // Code to scrape information from War Thunder Wiki
+        var url = _wikiUrl + request;
+        var webRequest = WebRequest.Create(url);
+        var response = await webRequest.GetResponseAsync();
+        var stream = response.GetResponseStream();
+        var reader = new StreamReader(stream);
+        var content = reader.ReadToEnd();
+        // parse content and return information
+        return "Wiki information: " + information;
     }
 
     public async Task<string> GetPatchNotes()
