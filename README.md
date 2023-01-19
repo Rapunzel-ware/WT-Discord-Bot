@@ -1,4 +1,4 @@
-# Discord-Bots
+# WT-Discord-Bot
 Simple WarThunder bot for Discord
 
 # About the Bot
